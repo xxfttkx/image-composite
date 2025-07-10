@@ -1,5 +1,8 @@
 name: Generate Composite Image Daily
 
+permissions:
+  contents: write
+
 on:
   schedule:
     - cron: "0 0 * * *" # 每天 UTC 0 点执行一次（北京时间 8:00）
