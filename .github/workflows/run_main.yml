@@ -11,6 +11,8 @@ on:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    env:
+      BG_URL: ${{ secrets.BG_URL }}
 
     steps:
       - name: 🧾 Checkout repository
