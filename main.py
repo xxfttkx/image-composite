@@ -5,8 +5,6 @@ import os
 import composite_kokoron
 import composite_aisa
 
-bg_url = os.getenv("BG_URL")
-
 def paste_foreground(background, foreground, scale=1.0, offset=(0, 0)):
     """
     将前景图缩放后，按居中+偏移的位置合成到背景图上。
