@@ -1,12 +1,11 @@
 import requests
 from PIL import Image
 from io import BytesIO
-from dotenv import load_dotenv
 import os
 import composite_kokoron
 import composite_aisa
 
-load_dotenv()  # 从 .env 文件加载环境变量
+bg_url = os.getenv("BG_URL")
 
 def paste_foreground(background, foreground, scale=1.0, offset=(0, 0)):
     """
