@@ -26,6 +26,7 @@ def main():
     body_id = random.choice(bodyArray)
     if body_id == 9:
         CDN_BASE = "https://cdn.jsdelivr.net/gh/xxfttkx/image-hosting/aisa"
+        BODY_PATH = f"ft藍咲_{body_id}a.png"
         body_url = f"{CDN_BASE}/{BODY_PATH}"
         body = Image.open(io.BytesIO(requests.get(body_url).content)).convert("RGBA")
         body.save("composite_aisa.png")

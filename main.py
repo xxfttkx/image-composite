@@ -1,31 +1,52 @@
-import io
-from PIL import Image
-import random
 import requests
+from PIL import Image
+from io import BytesIO
+from dotenv import load_dotenv
+import os
+import composite_kokoron
+import composite_aisa
 
-# 输入路径
-bodyArray = [1,10,11,12,13,15,17,18,19,2,20,21,23,3,4,5,7,9]
-faceArray = list(range(1, 31))  # [1, 2, 3, ..., 30]
+load_dotenv()  # 从 .env 文件加载环境变量
 
-# 随机选择一个 body 和 face 数字
-body_id = random.choice(bodyArray)
-face_id = random.choice(faceArray)
+def paste_foreground(background, foreground, scale=1.0, offset=(0, 0)):
+    """
+    将前景图缩放后，按居中+偏移的位置合成到背景图上。
 
-BODY_PATH = f"stb1_s0_1_{body_id}.png"
-FACE_PATH = f"st1_s0_1_{face_id}.png"
+    :param background: PIL.Image 背景图（RGBA模式）
+    :param foreground: PIL.Image 前景图（RGBA模式）
+    :param scale: float 缩放比例，如0.5表示缩小到一半
+    :param offset: tuple (x, y) 偏移量，基于居中位置的偏移
+    """
+    # 缩放前景图
+    new_size = (int(foreground.width * scale), int(foreground.height * scale))
+    fg_resized = foreground.resize(new_size, Image.LANCZOS)
 
-CDN_BASE = "https://cdn.jsdelivr.net/gh/xxfttkx/image-hosting/kokoron"
-body_url = f"{CDN_BASE}/{BODY_PATH}"
-face_url = f"{CDN_BASE}/{FACE_PATH}"
+    # 计算贴图位置（居中+偏移）
+    x = (background.width - fg_resized.width) // 2 + offset[0]
+    y = (background.height - fg_resized.height) // 2 + offset[1]
 
-# 下载图片并打开
-body = Image.open(io.BytesIO(requests.get(body_url).content)).convert("RGBA")
-face = Image.open(io.BytesIO(requests.get(face_url).content)).convert("RGBA")
+    # 贴图
+    background.paste(fg_resized, (x, y), fg_resized)
 
-tmp = Image.new("RGBA", body.size, (0, 0, 0, 0))
-tmp.paste(face)
-result = Image.alpha_composite(body,tmp)
-result.show()
-# 保存结果
-result.save("composite.png")
-print("✅ 合成完成：composite.png")
+def main():
+    # 步骤 1: 下载背景图
+    bg_url = os.getenv("BG_URL")
+    response = requests.get(bg_url)
+    background = Image.open(BytesIO(response.content)).convert("RGBA")
+
+    # 步骤 2: 加载人物图像（当前目录下的 composite_aisa.png）
+    foreground_0 = Image.open('composite_kokoron.png').convert("RGBA")
+    foreground_1 = Image.open('composite_aisa.png').convert("RGBA")
+
+    paste_foreground(background, foreground_0, scale=0.4, offset=(-300, background.height//4+200))
+    paste_foreground(background, foreground_1, scale=0.5, offset=(300, background.height//4))
+
+
+    # 步骤 5: 保存或显示结果
+    background.save("result.png")
+    background.show()
+
+if __name__ == "__main__":
+    composite_kokoron.main()
+    composite_aisa.main()
+    main()

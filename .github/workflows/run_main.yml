@@ -24,11 +24,8 @@ jobs:
       - name: 📦 Install dependencies
         run: pip install -r requirements.txt
 
-      - name: 🖼 Run kokoron composite script
+      - name: 🖼 Run main script
         run: python main.py
-
-      - name: 🖼 Run aisa composite script
-        run: python composite_aisa.py
 
       # 自动添加和提交更改
       - name: Commit changes
